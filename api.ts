@@ -1,39 +1,23 @@
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import axios from "axios";
 import { useEffect, useState } from "react";
 
-export const useGetQueens = () => {
-  const [data, setData] = useState<QueenSummary[]>([]);
-  const [loading, setLoading] = useState(true);
+const baseApiClient = axios.create({
+  baseURL: "http://192.168.1.162:8080/api",
+});
 
-  useEffect(() => {
-    const fetchQueens = async () => {
-      setLoading(true);
+export const useGetQueens = (): UseQueryResult<QueenSummary[], Error> => {
+  return useQuery({
+    queryKey: ["getQueens"],
+    queryFn: async () => {
+      const { data } = await baseApiClient({
+        url: "queens",
+        method: "GET",
+      });
 
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const queensData = [
-        {
-          id: "1",
-          name: "Bebe Zahara Benet",
-          imageURL:
-            "https://static.wikia.nocookie.net/logosrupaulsdragrace/images/4/40/BeBeZaharaBenetS1CastMug.png/revision/latest?cb=20210901220954",
-        },
-        {
-          id: "2",
-          name: "Nina Flowers",
-          imageURL:
-            "https://static.wikia.nocookie.net/logosrupaulsdragrace/images/6/6f/NinaFlowersS1CastMug.png/revision/latest?cb=20210901221108",
-        },
-      ];
-
-      setData(queensData);
-      setLoading(false);
-    };
-
-    fetchQueens();
-  }, []);
-
-  return { data, loading };
+      return data;
+    },
+  });
 };
 
 export const useGetQueen = () => {
@@ -96,7 +80,7 @@ export const useGetQueen = () => {
 export type QueenSummary = {
   id: string;
   name: string;
-  imageURL: string;
+  profileImageUrl: string;
 };
 
 export type Queen = {
